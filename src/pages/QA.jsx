@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, ThumbsUp, AlertCircle, Plus, X } from 'lucide-react';
+import { API_URL } from '../config';
 import './QA.css';
 
 const QA = () => {
@@ -13,7 +14,7 @@ const QA = () => {
     // 1. Fetch Questions from Backend
     const fetchQuestions = async () => {
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/questions');
+            const res = await fetch(`${API_URL}/api/questions`);
             const data = await res.json();
             setQuestions(data);
         } catch (error) {
@@ -33,7 +34,7 @@ const QA = () => {
         if (!newQ.title) return;
 
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/questions', {
+            const res = await fetch(`${API_URL}/api/questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newQ)
@@ -56,7 +57,7 @@ const QA = () => {
         }
 
         try {
-            const res = await fetch(`http://127.0.0.1:3000/api/questions/${questionId}`, {
+            const res = await fetch(`${API_URL}/api/questions/${questionId}`, {
                 method: 'DELETE'
             });
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, MapPin, Phone, Edit2, Check, X } from 'lucide-react';
+import { API_URL } from '../config';
 import './Profile.css';
 
 const Profile = () => {
@@ -32,7 +33,7 @@ const Profile = () => {
 
     const handleSave = async () => {
         try {
-            const res = await fetch(`http://127.0.0.1:3000/api/users/${user.id}`, {
+            const res = await fetch(`${API_URL}/api/users/${user.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, MessageCircle, Phone, Send } from 'lucide-react';
+import { Heart, Mail, MapPin, Phone, Send, Clock, User, CheckCircle } from 'lucide-react';
+import { API_URL } from '../config';
 import './Contact.css';
 
 const Contact = () => {
@@ -22,7 +23,7 @@ const Contact = () => {
             : { name: formData.name, email: formData.email, message: formData.message };
 
         try {
-            const res = await fetch(`http://127.0.0.1:3000${endpoint}`, {
+            const res = await fetch(`${API_URL}${endpoint}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

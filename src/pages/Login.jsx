@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 import './Login.css';
 
 const Login = () => {
@@ -15,7 +16,7 @@ const Login = () => {
         setError('');
 
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/login', {
+            const res = await fetch(`${API_URL}/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Book, Heart, Lock, Globe, X } from 'lucide-react';
+import { API_URL } from '../config';
 import './QuietTime.css';
 
 const QuietTime = () => {
@@ -11,7 +12,7 @@ const QuietTime = () => {
 
     const fetchEntries = async () => {
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/quiet-times');
+            const res = await fetch(`${API_URL}/api/quiet-times`);
             const data = await res.json();
             setEntries(data);
         } catch (err) {
@@ -29,7 +30,7 @@ const QuietTime = () => {
         if (!newEntry.scripture || !newEntry.reflection) return;
 
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/quiet-times', {
+            const res = await fetch(`${API_URL}/api/quiet-times`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newEntry)
@@ -49,7 +50,7 @@ const QuietTime = () => {
         }
 
         try {
-            const res = await fetch(`http://127.0.0.1:3000/api/quiet-times/${entryId}`, {
+            const res = await fetch(`${API_URL}/api/quiet-times/${entryId}`, {
                 method: 'DELETE'
             });
 

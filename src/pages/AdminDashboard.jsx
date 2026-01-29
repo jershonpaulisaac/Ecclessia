@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MessageSquare, BookOpen, RefreshCw, Trash2, Heart, Mail, Hand } from 'lucide-react';
+import { Users, Book, Clock, Heart, Mail, Hand, X, Trash2 } from 'lucide-react';
+import { API_URL } from '../config';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -18,12 +19,12 @@ const AdminDashboard = () => {
         setLoading(true);
         try {
             const [usersRes, questionsRes, qtRes, prayersRes, inquiriesRes, contribsRes] = await Promise.all([
-                fetch('http://127.0.0.1:3000/api/users'),
-                fetch('http://127.0.0.1:3000/api/questions'),
-                fetch('http://127.0.0.1:3000/api/quiet-times'),
-                fetch('http://127.0.0.1:3000/api/prayer-requests'),
-                fetch('http://127.0.0.1:3000/api/inquiries'),
-                fetch('http://127.0.0.1:3000/api/contributions')
+                fetch(`${API_URL}/api/users`),
+                fetch(`${API_URL}/api/questions`),
+                fetch(`${API_URL}/api/quiet-times`),
+                fetch(`${API_URL}/api/prayer-requests`),
+                fetch(`${API_URL}/api/inquiries`),
+                fetch(`${API_URL}/api/contributions`)
             ]);
 
             const users = await usersRes.json();
@@ -51,7 +52,7 @@ const AdminDashboard = () => {
         }
 
         try {
-            const res = await fetch(`http://127.0.0.1:3000/api/${category}/${id}`, {
+            const res = await fetch(`${API_URL}/api/${category}/${id}`, {
                 method: 'DELETE'
             });
 

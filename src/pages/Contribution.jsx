@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, Hand, Zap, CreditCard } from 'lucide-react';
+import { Heart, Mail, Hand, DollarSign, BookOpen, Users, Clock, Check } from 'lucide-react';
+import { API_URL } from '../config';
 import './Contribution.css';
 
 const Contribution = () => {
@@ -18,7 +19,7 @@ const Contribution = () => {
         setStatus({ loading: true, success: false, error: null });
 
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/contributions', {
+            const res = await fetch(`${API_URL}/api/contributions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

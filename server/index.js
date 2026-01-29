@@ -10,8 +10,8 @@ const PORT = 3000;
 
 // Middleware
 app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    origin: '*', // Allow all for initial deployment simplicity
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
@@ -31,11 +31,13 @@ app.use((req, res, next) => {
     next();
 });
 
-// Database Setup (SQLite for development, easy to switch to Postgres)
+// Database Setup (SQLite for development)
+// In production on Railway, SQLite will reset every deploy. 
+// User should eventually add a Postgres service.
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: path.join(__dirname, 'database.sqlite'),
-    logging: false // Toggle to true to see SQL queries
+    storage: process.env.DATABASE_URL || path.join(__dirname, 'database.sqlite'),
+    logging: false
 });
 
 // --- Models ---
@@ -454,8 +456,9 @@ sequelize.sync({ alter: true }).then(async () => {
         console.log('Default user created');
     }
 
-    app.listen(PORT, '127.0.0.1', () => {
-        console.log(`Server running on http://127.0.0.1:${PORT}`);
+    const FINAL_PORT = process.env.PORT || PORT;
+    app.listen(FINAL_PORT, '0.0.0.0', () => {
+        console.log(`Server running on port ${FINAL_PORT}`);
         console.log(`API endpoints ready.`);
     });
 });

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
+import { API_URL } from '../config';
 import './JoinCommunity.css';
 
 const JoinCommunity = () => {
@@ -26,7 +27,7 @@ const JoinCommunity = () => {
         e.preventDefault();
 
         try {
-            const res = await fetch('http://127.0.0.1:3000/api/join-community', {
+            const res = await fetch(`${API_URL}/api/join-community`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
