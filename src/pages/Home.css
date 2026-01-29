@@ -1,0 +1,87 @@
+.hero-section {
+    padding: 8rem 0 6rem;
+    background: linear-gradient(to bottom, var(--color-surface), var(--color-bg));
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.verse-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.verse-label {
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.scripture-text {
+    font-size: 2.2rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+    position: relative;
+    font-style: italic;
+    color: var(--color-text-main);
+}
+
+.verse-reference {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-serif);
+    margin-top: 1.5rem;
+}
+
+.reflection-box {
+    max-width: 600px;
+    margin: 4rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.access-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.access-card {
+    text-align: center;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    background: white;
+}
+
+.card-icon {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.access-card:hover .card-icon {
+    transform: scale(1.1);
+    color: var(--color-text-main);
+}
+
+.access-card h3 {
+    font-size: 1.4rem;
+    color: var(--color-text-main);
+}
+
+.access-card p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+}

@@ -1,0 +1,111 @@
+.category-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+}
+
+.cat-btn {
+    background: none;
+    border: 1px solid transparent;
+    padding: 0.5rem 1.5rem;
+    border-radius: 100px;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: all 0.2s;
+}
+
+.cat-btn:hover {
+    background: var(--color-surface);
+    color: var(--color-text-main);
+}
+
+.cat-btn.active {
+    background: var(--color-text-main);
+    color: white;
+    border-color: var(--color-text-main);
+}
+
+.teachings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.teaching-card {
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.video-placeholder {
+    background-color: var(--color-surface);
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+    transition: background 0.3s;
+}
+
+.teaching-card:hover .video-placeholder {
+    background-color: #E6E1D8;
+}
+
+.play-icon {
+    opacity: 0.7;
+    transition: transform 0.3s;
+}
+
+.teaching-card:hover .play-icon {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.teaching-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.teaching-cat {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.teaching-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.teaching-content p {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    flex: 1;
+}
+
+.teaching-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-surface);
+    padding-top: 1rem;
+}
+
+.teaching-meta .text-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 0;
+}

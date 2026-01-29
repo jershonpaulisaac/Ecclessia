@@ -1,0 +1,45 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  /* Adding extra buffer to ensure content clears the fixed navbar completely */
+  padding-top: calc(var(--spacing-nav-height) + 2rem);
+  width: 100%;
+}
+
+html,
+body {
+  scroll-padding-top: var(--spacing-nav-height);
+  /* For anchor links */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* Move overflow protection to a wrapper if needed, or rely on max-width */
+
+.simple-footer {
+  padding: 3rem 0;
+  border-top: 1px solid var(--color-border);
+  margin-top: 4rem;
+  background-color: var(--color-bg);
+}
+
+.soli-deo-gloria {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.copyright-text {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
