@@ -31,14 +31,28 @@ app.use((req, res, next) => {
     next();
 });
 
-// Database Setup (SQLite for development)
-// In production on Railway, SQLite will reset every deploy. 
-// User should eventually add a Postgres service.
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: process.env.DATABASE_URL || path.join(__dirname, 'database.sqlite'),
-    logging: false
-});
+// Database Setup
+const isPostgres = !!process.env.DATABASE_URL;
+
+const sequelize = isPostgres
+    ? new Sequelize(process.env.DATABASE_URL, {
+        dialect: 'postgres',
+        protocol: 'postgres',
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        },
+        logging: false
+    })
+    : new Sequelize({
+        dialect: 'sqlite',
+        storage: path.join(__dirname, 'database.sqlite'),
+        logging: false
+    });
+
+console.log(`Database initialized using ${isPostgres ? 'Postgres (Supabase)' : 'SQLite'}`);
 
 // --- Models ---
 
@@ -462,3 +476,5 @@ sequelize.sync({ alter: true }).then(async () => {
         console.log(`API endpoints ready.`);
     });
 });
+
+module.exports = app;
