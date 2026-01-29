@@ -1,14 +1,11 @@
+```json
 {
     "version": 2,
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/server/index.js"
+            "destination": "/api/index.js"
         }
-    ],
-    "functions": {
-        "server/index.js": {
-            "includeFiles": "server/database.sqlite"
-        }
-    }
+    ]
 }
+```

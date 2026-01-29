@@ -32,10 +32,11 @@ app.use((req, res, next) => {
 });
 
 // Database Setup
-const isPostgres = !!process.env.DATABASE_URL;
+const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+const isPostgres = !!dbUrl;
 
 const sequelize = isPostgres
-    ? new Sequelize(process.env.DATABASE_URL, {
+    ? new Sequelize(dbUrl, {
         dialect: 'postgres',
         protocol: 'postgres',
         dialectOptions: {
