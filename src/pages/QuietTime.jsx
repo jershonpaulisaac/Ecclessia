@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Book, Heart, Lock, Globe, X } from 'lucide-react';
+import { Book, Heart, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import './QuietTime.css';
@@ -11,7 +11,7 @@ const QuietTime = () => {
     const [submitting, setSubmitting] = useState(false);
 
     // New Entry State
-    const [newEntry, setNewEntry] = useState({ scripture: '', reflection: '', is_public: false });
+    const [newEntry, setNewEntry] = useState({ scripture: '', reflection: '' });
 
     const fetchEntries = async () => {
         try {
@@ -22,7 +22,7 @@ const QuietTime = () => {
                     *,
                     profiles (username)
                 `)
-                .eq('is_public', true)
+                .eq('is_public', true) // Only fetch public entries
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -53,13 +53,13 @@ const QuietTime = () => {
                 .insert([{
                     scripture: newEntry.scripture,
                     reflection: newEntry.reflection,
-                    is_public: newEntry.is_public,
+                    is_public: true, // Always public
                     user_id: user.id
                 }]);
 
             if (error) throw error;
 
-            setNewEntry({ scripture: '', reflection: '', is_public: false });
+            setNewEntry({ scripture: '', reflection: '' });
             fetchEntries();
             alert("Reflection shared successfully!");
         } catch (err) {
@@ -119,22 +119,6 @@ const QuietTime = () => {
                             ></textarea>
                         </div>
                         <div className="qt-actions">
-                            <div className="visibility-toggle">
-                                <button
-                                    className={`toggle-btn ${newEntry.is_public ? 'active' : ''}`}
-                                    onClick={() => setNewEntry({ ...newEntry, is_public: true })}
-                                    title="Public"
-                                >
-                                    <Globe size={16} />
-                                </button>
-                                <button
-                                    className={`toggle-btn ${!newEntry.is_public ? 'active' : ''}`}
-                                    onClick={() => setNewEntry({ ...newEntry, is_public: false })}
-                                    title="Private"
-                                >
-                                    <Lock size={16} />
-                                </button>
-                            </div>
                             <button className="btn" onClick={handleSubmit} disabled={submitting}>
                                 {submitting ? 'Sharing...' : 'Post Entry'}
                             </button>
