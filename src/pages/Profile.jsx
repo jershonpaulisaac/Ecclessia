@@ -32,6 +32,89 @@ const Profile = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const [activeTab, setActiveTab] = useState('overview');
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'posts':
+                return (
+                    <div className="tab-content text-center py-5">
+                        <h3 className="text-muted">No posts yet</h3>
+                        <p className="text-muted">When you contribute to Q&A or other sections, your posts will appear here.</p>
+                        <button className="btn mt-3" onClick={() => window.location.href = '/qa'}>Go to Q&A</button>
+                    </div>
+                );
+            case 'settings':
+                return (
+                    <div className="tab-content">
+                        <h3>Account Settings</h3>
+                        <div className="card mt-3">
+                            <h4>Security</h4>
+                            <p className="text-muted">Manage your password and security preferences.</p>
+                            <button className="btn btn-outline mt-2" onClick={() => alert("Password reset functionality coming soon!")}>Change Password</button>
+                        </div>
+                        <div className="card mt-3">
+                            <h4>Notifications</h4>
+                            <div className="form-check">
+                                <input type="checkbox" id="email-notif" defaultChecked />
+                                <label htmlFor="email-notif">Receive email updates</label>
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 'overview':
+            default:
+                return (
+                    <div className="details-grid">
+                        <div className="detail-item">
+                            <label>Full Name</label>
+                            {isEditing ? (
+                                <input name="username" value={formData.username} onChange={handleChange} />
+                            ) : (
+                                <p className="detail-value"><User size={16} /> {formData.username || user.username || 'Member'}</p>
+                            )}
+                        </div>
+
+                        <div className="detail-item">
+                            <label>Email Address</label>
+                            <p className="detail-value text-muted"><Mail size={16} /> {user.email}</p>
+                        </div>
+
+                        <div className="detail-item">
+                            <label>Phone</label>
+                            {isEditing ? (
+                                <input name="phone" value={formData.phone} onChange={handleChange} />
+                            ) : (
+                                <p className="detail-value">
+                                    {formData.phone ? <><Phone size={16} /> {formData.phone}</> : 'Not provided'}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="detail-item">
+                            <label>Location</label>
+                            {isEditing ? (
+                                <input name="city" value={formData.city} onChange={handleChange} />
+                            ) : (
+                                <p className="detail-value">
+                                    {formData.city ? <><MapPin size={16} /> {formData.city}</> : 'Not provided'}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="detail-item full-width">
+                            <label>About Me</label>
+                            {isEditing ? (
+                                <textarea name="intro" rows="4" value={formData.intro} onChange={handleChange} />
+                            ) : (
+                                <p className="detail-bio">{formData.intro || "No bio yet."}</p>
+                            )}
+                        </div>
+                    </div>
+                );
+        }
+    };
+
     const handleSave = async () => {
         try {
             setSaving(true);
