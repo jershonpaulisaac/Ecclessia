@@ -10,6 +10,11 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // 1. Check current session on mount
         const initAuth = async () => {
+            // Safety timeout to prevent stuck loading state
+            const timeout = setTimeout(() => {
+                setLoading(false);
+            }, 5000);
+
             try {
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
@@ -35,6 +40,7 @@ export const AuthProvider = ({ children }) => {
                 console.error("Auth initialization failed:", err.message);
                 setUser(null);
             } finally {
+                clearTimeout(timeout);
                 setLoading(false);
             }
         };

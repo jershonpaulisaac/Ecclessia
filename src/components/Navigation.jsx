@@ -56,26 +56,28 @@ const Navigation = () => {
             </NavLink>
           ))}
 
-          {!loading && (
-            user ? (
-              <div className="auth-nav-group">
-                {user.role === 'admin' && (
-                  <NavLink to="/admin" className="nav-link auth-link" title="Admin Dashboard">
-                    <Settings size={18} /> Admin
-                  </NavLink>
-                )}
-                <NavLink to="/profile" className="nav-link auth-link">
-                  <User size={18} /> Profile
+          {loading ? (
+            <div className="nav-link auth-link">
+              <span className="loading-dots">Loading</span>
+            </div>
+          ) : user ? (
+            <div className="auth-nav-group">
+              {user.role === 'admin' && (
+                <NavLink to="/admin" className="nav-link auth-link" title="Admin Dashboard">
+                  <Settings size={18} /> Admin
                 </NavLink>
-                <button onClick={handleLogout} className="nav-link logout-btn">
-                  <LogOut size={18} />
-                </button>
-              </div>
-            ) : (
-              <NavLink to="/login" className="nav-link auth-link btn-login">
-                <LogIn size={18} /> Login
+              )}
+              <NavLink to="/profile" className="nav-link auth-link">
+                <User size={18} /> Profile
               </NavLink>
-            )
+              <button onClick={handleLogout} className="nav-link logout-btn" title="Sign Out">
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <NavLink to="/login" className="nav-link auth-link btn-login">
+              <LogIn size={18} /> Login
+            </NavLink>
           )}
         </div>
 
@@ -96,21 +98,21 @@ const Navigation = () => {
               </NavLink>
             ))}
 
-            {!loading && (
-              user ? (
-                <>
-                  <NavLink to="/profile" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-                    Profile
-                  </NavLink>
-                  <button onClick={handleLogout} className="mobile-link text-left w-full logout-btn">
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <NavLink to="/login" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-                  Login / Sign Up
+            {loading ? (
+              <div className="mobile-link anim-pulse">Checking status...</div>
+            ) : user ? (
+              <>
+                <NavLink to="/profile" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
+                  Profile
                 </NavLink>
-              )
+                <button onClick={handleLogout} className="mobile-link text-left w-full logout-btn">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <NavLink to="/login" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
+                Login / Sign Up
+              </NavLink>
             )}
           </div>
         )}
