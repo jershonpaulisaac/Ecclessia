@@ -34,26 +34,79 @@ body.dark {
   --color-border: #404040;
 }
 
-body.dark .card {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+/* Aggressive Dark Mode Overrides - "Nothing White" Policy */
+body.dark,
+body.dark .card,
+body.dark .settings-card,
+body.dark .profile-sidebar,
+body.dark .profile-content,
+body.dark .navbar,
+body.dark .mobile-menu,
+body.dark .profile-dropdown,
+body.dark .dropdown-item,
+body.dark .login-card,
+body.dark .auth-card,
+body.dark .access-card,
+body.dark .question-card,
+body.dark .ask-form-card,
+body.dark .qt-compose-card,
+body.dark .qt-entry,
+body.dark .contrib-card,
+body.dark .contrib-form-section,
+body.dark .payment-card,
+body.dark .admin-table,
+body.dark input,
+body.dark textarea,
+body.dark select,
+body.dark button.btn-outline,
+body.dark .nav-item:hover,
+body.dark .form-group,
+body.dark .box,
+body.dark .panel,
+body.dark .modal-content,
+body.dark .home-section
+
+/* Covering potential home sections */
+  {
+  background-color: var(--color-surface) !important;
+  color: var(--color-text-main) !important;
+  border-color: var(--color-border) !important;
 }
 
+/* Specific background overrides for main background areas */
+body.dark,
+body.dark .page-container,
+body.dark .navbar,
 body.dark input,
 body.dark textarea,
 body.dark select {
-  background: var(--color-bg);
-  border-color: var(--color-border);
+  background-color: var(--color-bg) !important;
+}
+
+/* Ensure text is always readable */
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6,
+body.dark p,
+body.dark span,
+body.dark label,
+body.dark li,
+body.dark td,
+body.dark th,
+body.dark div {
   color: var(--color-text-main);
 }
 
-body.dark .btn-outline {
-  border-color: var(--color-border);
-  color: var(--color-text-main);
+body.dark .text-muted {
+  color: var(--color-text-muted) !important;
 }
 
-body.dark .btn-outline:hover {
-  background: var(--color-surface);
+/* Invert icons or specific white elements if needed */
+body.dark img.icon-invert {
+  filter: invert(1);
 }
 
 * {
