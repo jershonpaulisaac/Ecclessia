@@ -71,78 +71,50 @@ const Profile = () => {
                     <span className="profile-role">{user.role}</span>
 
                     <div className="profile-nav mt-4">
-                        <button className="nav-item active">Overview</button>
-                        <button className="nav-item">My Posts</button>
-                        <button className="nav-item">Settings</button>
+                        <button
+                            className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('overview')}
+                        >
+                            Overview
+                        </button>
+                        <button
+                            className={`nav-item ${activeTab === 'posts' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('posts')}
+                        >
+                            My Posts
+                        </button>
+                        <button
+                            className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('settings')}
+                        >
+                            Settings
+                        </button>
                     </div>
                 </aside>
 
                 {/* Profile Content */}
                 <main className="profile-content">
                     <div className="content-header">
-                        <h3>Profile Details</h3>
-                        {!isEditing ? (
-                            <button className="btn-icon" onClick={() => setIsEditing(true)}>
-                                <Edit2 size={16} /> Edit
-                            </button>
-                        ) : (
-                            <div className="action-group">
-                                <button className="btn-icon cancel" onClick={() => setIsEditing(false)}>
-                                    <X size={16} /> Cancel
+                        <h3>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</h3>
+                        {activeTab === 'overview' && (
+                            !isEditing ? (
+                                <button className="btn-icon" onClick={() => setIsEditing(true)}>
+                                    <Edit2 size={16} /> Edit
                                 </button>
-                                <button className="btn-icon save" onClick={handleSave} disabled={saving}>
-                                    <Check size={16} /> {saving ? 'Saving...' : 'Save'}
-                                </button>
-                            </div>
+                            ) : (
+                                <div className="action-group">
+                                    <button className="btn-icon cancel" onClick={() => setIsEditing(false)}>
+                                        <X size={16} /> Cancel
+                                    </button>
+                                    <button className="btn-icon save" onClick={handleSave} disabled={saving}>
+                                        <Check size={16} /> {saving ? 'Saving...' : 'Save'}
+                                    </button>
+                                </div>
+                            )
                         )}
                     </div>
 
-                    <div className="details-grid">
-                        <div className="detail-item">
-                            <label>Full Name</label>
-                            {isEditing ? (
-                                <input name="username" value={formData.username} onChange={handleChange} />
-                            ) : (
-                                <p className="detail-value"><User size={16} /> {formData.username || user.username || 'Member'}</p>
-                            )}
-                        </div>
-
-                        <div className="detail-item">
-                            <label>Email Address</label>
-                            <p className="detail-value text-muted"><Mail size={16} /> {user.email}</p>
-                        </div>
-
-                        <div className="detail-item">
-                            <label>Phone</label>
-                            {isEditing ? (
-                                <input name="phone" value={formData.phone} onChange={handleChange} />
-                            ) : (
-                                <p className="detail-value">
-                                    {formData.phone ? <><Phone size={16} /> {formData.phone}</> : 'Not provided'}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="detail-item">
-                            <label>Location</label>
-                            {isEditing ? (
-                                <input name="city" value={formData.city} onChange={handleChange} />
-                            ) : (
-                                <p className="detail-value">
-                                    {formData.city ? <><MapPin size={16} /> {formData.city}</> : 'Not provided'}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="detail-item full-width">
-                            <label>About Me</label>
-                            {isEditing ? (
-                                <textarea name="intro" rows="4" value={formData.intro} onChange={handleChange} />
-                            ) : (
-                                <p className="detail-bio">{formData.intro || "No bio yet."}</p>
-                            )}
-                        </div>
-                    </div>
+                    {renderTabContent()}
                 </main>
             </div>
         </div>
