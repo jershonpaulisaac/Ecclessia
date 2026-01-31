@@ -46,77 +46,6 @@ const Profile = () => {
                         <button className="btn mt-3" onClick={() => window.location.href = '/qa'}>Go to Q&A</button>
                     </div>
                 );
-            case 'settings':
-                return (
-                    <div className="tab-content settings-grid">
-                        <section className="settings-card">
-                            <div className="card-header">
-                                <Moon size={20} className="icon-blue" />
-                                <h4>Appearance</h4>
-                            </div>
-                            <div className="setting-row">
-                                <div className="setting-info">
-                                    <label>Dark Mode</label>
-                                    <p>Switch between day and night themes</p>
-                                </div>
-                                <button className={`toggle-btn ${theme === 'dark' ? 'active' : ''}`} onClick={toggleTheme}>
-                                    <div className="thumb">
-                                        {theme === 'dark' ? <Moon size={12} /> : <Sun size={12} />}
-                                    </div>
-                                </button>
-                            </div>
-                        </section>
-
-                        <section className="settings-card">
-                            <div className="card-header">
-                                <Shield size={20} className="icon-green" />
-                                <h4>Security</h4>
-                            </div>
-                            <div className="setting-row">
-                                <div className="setting-info">
-                                    <label>Password</label>
-                                    <p>Protect your account with a strong password</p>
-                                </div>
-                                <button className="btn btn-outline btn-sm">Change</button>
-                            </div>
-                            <div className="setting-row">
-                                <div className="setting-info">
-                                    <label>Two-Factor Auth</label>
-                                    <p>Add an extra layer of security</p>
-                                </div>
-                                <span className="badge">Coming Soon</span>
-                            </div>
-                        </section>
-
-                        <section className="settings-card">
-                            <div className="card-header">
-                                <Bell size={20} className="icon-orange" />
-                                <h4>Notifications</h4>
-                            </div>
-                            <div className="setting-row">
-                                <div className="setting-info">
-                                    <label>Email Updates</label>
-                                    <p>Receive weekly community digests</p>
-                                </div>
-                                <input type="checkbox" defaultChecked className="toggle-checkbox" />
-                            </div>
-                        </section>
-
-                        <section className="settings-card danger-zone">
-                            <div className="card-header">
-                                <Trash2 size={20} className="icon-red" />
-                                <h4>Danger Zone</h4>
-                            </div>
-                            <div className="setting-row">
-                                <div className="setting-info">
-                                    <label>Delete Account</label>
-                                    <p>Permanently remove your profile and data</p>
-                                </div>
-                                <button className="btn btn-danger btn-sm" onClick={() => alert("Please contact admin to delete your account.")}>Delete</button>
-                            </div>
-                        </section>
-                    </div>
-                );
             case 'overview':
             default:
                 return (
@@ -220,12 +149,6 @@ const Profile = () => {
                             onClick={() => setActiveTab('posts')}
                         >
                             My Posts
-                        </button>
-                        <button
-                            className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('settings')}
-                        >
-                            Settings
                         </button>
                     </div>
                 </aside>
