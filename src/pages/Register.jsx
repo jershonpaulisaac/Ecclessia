@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import './Register.css';
 
@@ -158,7 +158,7 @@ const Register = () => {
                 </form>
 
                 <p className="auth-footer text-center">
-                    Already have an account? <a href="#" className="link">Sign in here</a>
+                    Already have an account? <Link to="/login" className="link">Sign in here</Link>
                 </p>
             </div>
         </div>
