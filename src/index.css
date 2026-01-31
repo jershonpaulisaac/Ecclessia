@@ -20,6 +20,20 @@
   --spacing-nav-height: 70px;
 }
 
+body.dark {
+  /* Dark Mode Palette - Deep, Reverent, Comfortable */
+  --color-bg: #1A1A1A;
+  --color-surface: #2D2D2D;
+  --color-surface-hover: #3D3D3D;
+  --color-text-main: #EAEAEA;
+  --color-text-muted: #A0A0A0;
+  --color-accent: #A89F91;
+  --color-accent-light: #4A4A4A;
+  --color-amen: #8B9B84;
+  --color-blue-muted: #8B9BB4;
+  --color-border: #404040;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

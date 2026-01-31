@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { User, Mail, MapPin, Phone, Edit2, Check, X } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { User, Mail, MapPin, Phone, Edit2, Check, X, Moon, Sun, Shield, Bell, Key, LogOut, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import './Profile.css';
 
 const Profile = () => {
     const { user, loading: authLoading } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState({
@@ -46,20 +46,73 @@ const Profile = () => {
                 );
             case 'settings':
                 return (
-                    <div className="tab-content">
-                        <h3>Account Settings</h3>
-                        <div className="card mt-3">
-                            <h4>Security</h4>
-                            <p className="text-muted">Manage your password and security preferences.</p>
-                            <button className="btn btn-outline mt-2" onClick={() => alert("Password reset functionality coming soon!")}>Change Password</button>
-                        </div>
-                        <div className="card mt-3">
-                            <h4>Notifications</h4>
-                            <div className="form-check">
-                                <input type="checkbox" id="email-notif" defaultChecked />
-                                <label htmlFor="email-notif">Receive email updates</label>
+                    <div className="tab-content settings-grid">
+                        <section className="settings-card">
+                            <div className="card-header">
+                                <Moon size={20} className="icon-blue" />
+                                <h4>Appearance</h4>
                             </div>
-                        </div>
+                            <div className="setting-row">
+                                <div className="setting-info">
+                                    <label>Dark Mode</label>
+                                    <p>Switch between day and night themes</p>
+                                </div>
+                                <button className={`toggle-btn ${theme === 'dark' ? 'active' : ''}`} onClick={toggleTheme}>
+                                    <div className="thumb">
+                                        {theme === 'dark' ? <Moon size={12} /> : <Sun size={12} />}
+                                    </div>
+                                </button>
+                            </div>
+                        </section>
+
+                        <section className="settings-card">
+                            <div className="card-header">
+                                <Shield size={20} className="icon-green" />
+                                <h4>Security</h4>
+                            </div>
+                            <div className="setting-row">
+                                <div className="setting-info">
+                                    <label>Password</label>
+                                    <p>Protect your account with a strong password</p>
+                                </div>
+                                <button className="btn btn-outline btn-sm">Change</button>
+                            </div>
+                            <div className="setting-row">
+                                <div className="setting-info">
+                                    <label>Two-Factor Auth</label>
+                                    <p>Add an extra layer of security</p>
+                                </div>
+                                <span className="badge">Coming Soon</span>
+                            </div>
+                        </section>
+
+                        <section className="settings-card">
+                            <div className="card-header">
+                                <Bell size={20} className="icon-orange" />
+                                <h4>Notifications</h4>
+                            </div>
+                            <div className="setting-row">
+                                <div className="setting-info">
+                                    <label>Email Updates</label>
+                                    <p>Receive weekly community digests</p>
+                                </div>
+                                <input type="checkbox" defaultChecked className="toggle-checkbox" />
+                            </div>
+                        </section>
+
+                        <section className="settings-card danger-zone">
+                            <div className="card-header">
+                                <Trash2 size={20} className="icon-red" />
+                                <h4>Danger Zone</h4>
+                            </div>
+                            <div className="setting-row">
+                                <div className="setting-info">
+                                    <label>Delete Account</label>
+                                    <p>Permanently remove your profile and data</p>
+                                </div>
+                                <button className="btn btn-danger btn-sm" onClick={() => alert("Please contact admin to delete your account.")}>Delete</button>
+                            </div>
+                        </section>
                     </div>
                 );
             case 'overview':
