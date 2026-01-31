@@ -45,7 +45,7 @@ const Navigation = () => {
           Ecclesia
         </NavLink>
 
-        <div className="desktop-menu">
+        <div className="desktop-links">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -55,7 +55,9 @@ const Navigation = () => {
               {link.label}
             </NavLink>
           ))}
+        </div>
 
+        <div className="desktop-auth">
           {loading ? (
             <div className="nav-link auth-link">
               <div className="nav-skeleton" title="Checking authentication status..."></div>
