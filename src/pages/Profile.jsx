@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { User, Mail, MapPin, Phone, Edit2, Check, X, Moon, Sun, Shield, Bell, Key, LogOut, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
