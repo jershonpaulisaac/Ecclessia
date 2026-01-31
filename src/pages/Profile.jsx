@@ -103,7 +103,7 @@ const Profile = () => {
                             {isEditing ? (
                                 <input name="username" value={formData.username} onChange={handleChange} />
                             ) : (
-                                <p className="detail-value"><User size={16} /> {user.username}</p>
+                                <p className="detail-value"><User size={16} /> {formData.username || user.username || 'Member'}</p>
                             )}
                         </div>
 
@@ -117,7 +117,9 @@ const Profile = () => {
                             {isEditing ? (
                                 <input name="phone" value={formData.phone} onChange={handleChange} />
                             ) : (
-                                <p className="detail-value">{user.phone ? <><Phone size={16} /> {user.phone}</> : 'Not provided'}</p>
+                                <p className="detail-value">
+                                    {formData.phone ? <><Phone size={16} /> {formData.phone}</> : 'Not provided'}
+                                </p>
                             )}
                         </div>
 
@@ -126,7 +128,9 @@ const Profile = () => {
                             {isEditing ? (
                                 <input name="city" value={formData.city} onChange={handleChange} />
                             ) : (
-                                <p className="detail-value">{user.city ? <><MapPin size={16} /> {user.city}</> : 'Not provided'}</p>
+                                <p className="detail-value">
+                                    {formData.city ? <><MapPin size={16} /> {formData.city}</> : 'Not provided'}
+                                </p>
                             )}
                         </div>
 
@@ -135,7 +139,7 @@ const Profile = () => {
                             {isEditing ? (
                                 <textarea name="intro" rows="4" value={formData.intro} onChange={handleChange} />
                             ) : (
-                                <p className="detail-bio">{user.intro || "No bio yet."}</p>
+                                <p className="detail-bio">{formData.intro || "No bio yet."}</p>
                             )}
                         </div>
                     </div>
