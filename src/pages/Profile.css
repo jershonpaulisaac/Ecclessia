@@ -258,22 +258,61 @@
     color: #EF4444;
 }
 
-.danger-zone .card-header {
-    background: #FEF2F2;
-}
-
-.danger-zone h4 {
-    color: #991B1B;
-}
-
 /* Dark Mode Adjustments */
 body.dark .profile-sidebar,
 body.dark .profile-content,
 body.dark .settings-card,
 body.dark .btn-icon {
     background: var(--color-surface);
+    border-color: var(--color-border);
 }
 
 body.dark .card-header {
     background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-border);
+}
+
+body.dark .nav-item {
+    color: var(--color-text-muted);
+}
+
+body.dark .nav-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-main);
+}
+
+body.dark .nav-item.active {
+    background: var(--color-text-main);
+    color: var(--color-bg);
+    /* Inverted for contrast */
+}
+
+body.dark .detail-value {
+    color: var(--color-text-main);
+}
+
+body.dark .toggle-btn {
+    background: var(--color-border);
+}
+
+body.dark .toggle-btn.active {
+    background: var(--color-text-main);
+}
+
+body.dark .thumb {
+    background: var(--color-text-main);
+    color: var(--color-bg);
+}
+
+body.dark .toggle-btn.active .thumb {
+    background: var(--color-bg);
+    color: var(--color-text-main);
+}
+
+body.dark .danger-zone .card-header {
+    background: rgba(220, 38, 38, 0.1);
+}
+
+body.dark .danger-zone h4 {
+    color: #F87171;
 }

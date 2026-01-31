@@ -34,6 +34,28 @@ body.dark {
   --color-border: #404040;
 }
 
+body.dark .card {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  color: var(--color-text-main);
+}
+
+body.dark .btn-outline {
+  border-color: var(--color-border);
+  color: var(--color-text-main);
+}
+
+body.dark .btn-outline:hover {
+  background: var(--color-surface);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
