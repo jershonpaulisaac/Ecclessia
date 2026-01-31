@@ -40,7 +40,6 @@ body.dark .card,
 body.dark .settings-card,
 body.dark .profile-sidebar,
 body.dark .profile-content,
-body.dark .navbar,
 body.dark .mobile-menu,
 body.dark .profile-dropdown,
 body.dark .dropdown-item,
@@ -76,7 +75,6 @@ body.dark .home-section
 /* Specific background overrides for main background areas */
 body.dark,
 body.dark .page-container,
-body.dark .navbar,
 body.dark input,
 body.dark textarea,
 body.dark select {
