@@ -1,19 +1,51 @@
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--spacing-nav-height);
-    z-index: 1000;
-    transition: all 0.3s ease;
+/* Dark Mode Overrides for Mobile/Dropdowns */
+body.dark .mobile-menu {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+body.dark .mobile-link {
+    color: var(--color-text-main);
+}
+
+body.dark .profile-dropdown {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .dropdown-header {
+    border-color: var(--color-border);
+}
+
+body.dark .dropdown-item {
+    color: var(--color-text-main);
+}
+
+body.dark .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    /* Lighter hover in dark mode */
+}
+
+body.dark .dropdown-item.logout {
+    border-color: var(--color-border);
+}
+
+body.dark .navbar {
     background: var(--color-bg);
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .navbar.scrolled {
     background: rgba(255, 255, 255, 0.98);
     border-bottom: 1px solid var(--color-border);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+body.dark .navbar.scrolled {
+    background: rgba(26, 26, 26, 0.95);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .nav-content {
