@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, MapPin, Phone, Edit2, Check, X } from 'lucide-react';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
 import './Profile.css';
 
 const Profile = () => {
-    const { user, login } = useAuth(); // login actually updates user state too
+    const { user, loading: authLoading } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -18,11 +19,11 @@ const Profile = () => {
     useEffect(() => {
         if (user) {
             setFormData({
-                username: user.username || '',
+                username: user.user_metadata?.username || user.username || '',
                 email: user.email || '',
-                phone: user.phone || '',
-                city: user.city || '',
-                intro: user.intro || ''
+                phone: user.user_metadata?.phone || user.phone || '',
+                city: user.user_metadata?.city || user.city || '',
+                intro: user.user_metadata?.intro || user.intro || ''
             });
         }
     }, [user]);
@@ -33,25 +34,30 @@ const Profile = () => {
 
     const handleSave = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/users/${user.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            const updatedUser = await res.json();
+            setSaving(true);
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    username: formData.username,
+                    phone: formData.phone,
+                    city: formData.city,
+                    intro: formData.intro
+                })
+                .eq('id', user.id);
 
-            if (res.ok) {
-                login(updatedUser); // Update global context
-                setIsEditing(false);
-            } else {
-                alert("Failed to update profile");
-            }
+            if (error) throw error;
+            setIsEditing(false);
+            alert("Profile updated successfully!");
         } catch (err) {
             console.error(err);
+            alert("Failed to update profile: " + err.message);
+        } finally {
+            setSaving(false);
         }
     };
 
-    if (!user) return <div className="container py-5">Please logging in to view your profile.</div>;
+    if (authLoading) return <div className="container py-5">Loading profile...</div>;
+    if (!user) return <div className="container py-5">Please log in to view your profile.</div>;
 
     return (
         <div className="page-container container fade-in">
@@ -84,8 +90,8 @@ const Profile = () => {
                                 <button className="btn-icon cancel" onClick={() => setIsEditing(false)}>
                                     <X size={16} /> Cancel
                                 </button>
-                                <button className="btn-icon save" onClick={handleSave}>
-                                    <Check size={16} /> Save
+                                <button className="btn-icon save" onClick={handleSave} disabled={saving}>
+                                    <Check size={16} /> {saving ? 'Saving...' : 'Save'}
                                 </button>
                             </div>
                         )}

@@ -11,15 +11,33 @@ export const AuthProvider = ({ children }) => {
         // 1. Check current session on mount
         const initAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
+            if (session?.user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                setUser({ ...session.user, ...profile });
+            } else {
+                setUser(null);
+            }
             setLoading(false);
         };
 
         initAuth();
 
         // 2. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            if (session?.user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+                setUser({ ...session.user, ...profile });
+            } else {
+                setUser(null);
+            }
         });
 
         return () => subscription.unsubscribe();

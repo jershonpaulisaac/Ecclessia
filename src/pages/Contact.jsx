@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Heart, Mail, MapPin, Phone, Send, Clock, User, CheckCircle } from 'lucide-react';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import './Contact.css';
 
 const Contact = () => {
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('prayer');
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
@@ -17,29 +19,24 @@ const Contact = () => {
         e.preventDefault();
         setStatus({ loading: true, success: false, error: null });
 
-        const endpoint = activeTab === 'prayer' ? '/api/prayer-requests' : '/api/inquiries';
+        const table = activeTab === 'prayer' ? 'prayer_requests' : 'inquiries';
         const payload = activeTab === 'prayer'
-            ? { name: formData.name, email: formData.email, request: formData.message }
-            : { name: formData.name, email: formData.email, message: formData.message };
+            ? { name: formData.name, email: formData.email, request: formData.message, user_id: user?.id }
+            : { name: formData.name, email: formData.email, message: formData.message, user_id: user?.id };
 
         try {
-            const res = await fetch(`${API_URL}${endpoint}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const { error } = await supabase
+                .from(table)
+                .insert([payload]);
 
-            if (res.ok) {
-                setStatus({ loading: false, success: true, error: null });
-                setFormData({ name: '', email: '', message: '' });
-                setTimeout(() => setStatus(prev => ({ ...prev, success: false })), 5000);
-            } else {
-                const data = await res.json();
-                setStatus({ loading: false, success: false, error: data.error || 'Something went wrong' });
-            }
+            if (error) throw error;
+
+            setStatus({ loading: false, success: true, error: null });
+            setFormData({ name: '', email: '', message: '' });
+            setTimeout(() => setStatus(prev => ({ ...prev, success: false })), 5000);
         } catch (err) {
             console.error('Submission failed:', err);
-            setStatus({ loading: false, success: false, error: 'Could not connect to server' });
+            setStatus({ loading: false, success: false, error: err.message || 'Something went wrong' });
         }
     };
 

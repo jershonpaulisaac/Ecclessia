@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Book, Clock, Heart, Mail, Hand, X, Trash2 } from 'lucide-react';
-import { API_URL } from '../config';
+import { Users, BookOpen, MessageSquare, Heart, Mail, Hand, Trash2, RefreshCw } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -11,30 +11,41 @@ const AdminDashboard = () => {
         quietTimes: [],
         prayers: [],
         inquiries: [],
-        contributions: []
+        contributions: [],
+        communityJoins: []
     });
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [usersRes, questionsRes, qtRes, prayersRes, inquiriesRes, contribsRes] = await Promise.all([
-                fetch(`${API_URL}/api/users`),
-                fetch(`${API_URL}/api/questions`),
-                fetch(`${API_URL}/api/quiet-times`),
-                fetch(`${API_URL}/api/prayer-requests`),
-                fetch(`${API_URL}/api/inquiries`),
-                fetch(`${API_URL}/api/contributions`)
+            const [
+                { data: users },
+                { data: questions },
+                { data: quietTimes },
+                { data: prayers },
+                { data: inquiries },
+                { data: contributions },
+                { data: communityJoins }
+            ] = await Promise.all([
+                supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+                supabase.from('questions').select('*, profiles(username)').order('created_at', { ascending: false }),
+                supabase.from('quiet_times').select('*, profiles(username)').order('created_at', { ascending: false }),
+                supabase.from('prayer_requests').select('*').order('created_at', { ascending: false }),
+                supabase.from('inquiries').select('*').order('created_at', { ascending: false }),
+                supabase.from('contribution_records').select('*').order('created_at', { ascending: false }),
+                supabase.from('community_joins').select('*').order('created_at', { ascending: false })
             ]);
 
-            const users = await usersRes.json();
-            const questions = await questionsRes.json();
-            const quietTimes = await qtRes.json();
-            const prayers = await prayersRes.json();
-            const inquiries = await inquiriesRes.json();
-            const contributions = await contribsRes.json();
-
-            setData({ users, questions, quietTimes, prayers, inquiries, contributions });
+            setData({
+                users: users || [],
+                questions: questions || [],
+                quietTimes: quietTimes || [],
+                prayers: prayers || [],
+                inquiries: inquiries || [],
+                contributions: contributions || [],
+                communityJoins: communityJoins || []
+            });
         } catch (error) {
             console.error("Error fetching admin data:", error);
         } finally {
@@ -46,24 +57,22 @@ const AdminDashboard = () => {
         fetchData();
     }, []);
 
-    const handleDeleteItem = async (category, id, label) => {
+    const handleDeleteItem = async (table, id, label) => {
         if (!window.confirm(`Are you sure you want to delete this ${label}?`)) {
             return;
         }
 
         try {
-            const res = await fetch(`${API_URL}/api/${category}/${id}`, {
-                method: 'DELETE'
-            });
+            const { error } = await supabase
+                .from(table)
+                .delete()
+                .eq('id', id);
 
-            if (res.ok) {
-                fetchData();
-            } else {
-                alert(`Failed to delete ${label}`);
-            }
+            if (error) throw error;
+            fetchData();
         } catch (error) {
             console.error(`Error deleting ${label}:`, error);
-            alert(`Error deleting ${label}`);
+            alert(`Error deleting ${label}: ` + error.message);
         }
     };
 
@@ -90,7 +99,7 @@ const AdminDashboard = () => {
                                     <td><span className="user-badge">{u.username}</span></td>
                                     <td>{u.email}</td>
                                     <td>{u.role}</td>
-                                    <td>{new Date(u.createdAt).toLocaleDateString()}</td>
+                                    <td>{new Date(u.created_at).toLocaleDateString()}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -118,7 +127,7 @@ const AdminDashboard = () => {
                             {data.questions.map(q => (
                                 <tr key={q.id}>
                                     <td>{q.id}</td>
-                                    <td><strong>{q.User ? q.User.username : 'Unknown'}</strong></td>
+                                    <td><strong>{q.profiles ? q.profiles.username : 'Unknown'}</strong></td>
                                     <td className="cell-wrap">{q.title}</td>
                                     <td className="cell-truncate">{q.context}</td>
                                     <td>{q.verse_ref || '-'}</td>
@@ -158,14 +167,14 @@ const AdminDashboard = () => {
                             {data.quietTimes.map(qt => (
                                 <tr key={qt.id}>
                                     <td>{qt.id}</td>
-                                    <td><strong>{qt.User ? qt.User.username : 'Unknown'}</strong></td>
+                                    <td><strong>{qt.profiles ? qt.profiles.username : 'Unknown'}</strong></td>
                                     <td className="cell-scripture">{qt.scripture}</td>
                                     <td className="cell-wrap">{qt.reflection}</td>
-                                    <td>{new Date(qt.createdAt).toLocaleDateString()}</td>
+                                    <td>{new Date(qt.created_at).toLocaleDateString()}</td>
                                     <td>
                                         <button
                                             className="admin-delete-btn"
-                                            onClick={() => handleDeleteItem('quiet-times', qt.id, 'quiet time')}
+                                            onClick={() => handleDeleteItem('quiet_times', qt.id, 'quiet time')}
                                             title="Delete entry"
                                         >
                                             <Trash2 size={16} />
@@ -200,11 +209,11 @@ const AdminDashboard = () => {
                                     <td><strong>{p.name}</strong></td>
                                     <td>{p.email}</td>
                                     <td className="cell-wrap">{p.request}</td>
-                                    <td>{new Date(p.createdAt).toLocaleDateString()}</td>
+                                    <td>{new Date(p.created_at).toLocaleDateString()}</td>
                                     <td>
                                         <button
                                             className="admin-delete-btn"
-                                            onClick={() => handleDeleteItem('prayer-requests', p.id, 'prayer request')}
+                                            onClick={() => handleDeleteItem('prayer_requests', p.id, 'prayer request')}
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -238,7 +247,7 @@ const AdminDashboard = () => {
                                     <td><strong>{i.name}</strong></td>
                                     <td>{i.email}</td>
                                     <td className="cell-wrap">{i.message}</td>
-                                    <td>{new Date(i.createdAt).toLocaleDateString()}</td>
+                                    <td>{new Date(i.created_at).toLocaleDateString()}</td>
                                     <td>
                                         <button
                                             className="admin-delete-btn"
@@ -279,11 +288,56 @@ const AdminDashboard = () => {
                                         {c.amount ? `₹${c.amount}` : '-'}
                                         {c.message && <div className="detail-text">{c.message}</div>}
                                     </td>
-                                    <td>{new Date(c.createdAt).toLocaleDateString()}</td>
+                                    <td>{new Date(c.created_at).toLocaleDateString()}</td>
                                     <td>
                                         <button
                                             className="admin-delete-btn"
-                                            onClick={() => handleDeleteItem('contributions', c.id, 'contribution')}
+                                            onClick={() => handleDeleteItem('contribution_records', c.id, 'contribution')}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        if (activeTab === 'joins') {
+            return (
+                <div className="table-responsive fade-in">
+                    <table className="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>City</th>
+                                <th>Intro</th>
+                                <th>Newsletter</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.communityJoins.map(j => (
+                                <tr key={j.id}>
+                                    <td>{j.id}</td>
+                                    <td><strong>{j.name}</strong></td>
+                                    <td>{j.email}</td>
+                                    <td>{j.phone || '-'}</td>
+                                    <td>{j.city}</td>
+                                    <td className="cell-wrap">{j.intro || '-'}</td>
+                                    <td>{j.subscribed_newsletter ? 'Yes' : 'No'}</td>
+                                    <td>{new Date(j.created_at).toLocaleDateString()}</td>
+                                    <td>
+                                        <button
+                                            className="admin-delete-btn"
+                                            onClick={() => handleDeleteItem('community_joins', j.id, 'join request')}
+                                            title="Delete entry"
                                         >
                                             <Trash2 size={16} />
                                         </button>
@@ -354,6 +408,13 @@ const AdminDashboard = () => {
                     >
                         <Hand size={20} /> Contributions
                         <span className="count-badge">{data.contributions.length}</span>
+                    </button>
+                    <button
+                        className={`admin-nav-item ${activeTab === 'joins' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('joins')}
+                    >
+                        <Users size={20} /> Community Joins
+                        <span className="count-badge">{data.communityJoins.length}</span>
                     </button>
                 </aside>
 

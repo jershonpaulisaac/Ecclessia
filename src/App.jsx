@@ -5,6 +5,8 @@ import QA from './pages/QA';
 import QuietTime from './pages/QuietTime';
 import Teachings from './pages/Teachings';
 import Register from './pages/Register';
+import Login from './pages/Login';
+import Profile from './pages/Profile';
 import Contribution from './pages/Contribution';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
@@ -35,6 +37,9 @@ function App() {
                 <Route path="/join" element={<JoinCommunity />} />
                 <Route path="/contribution" element={<Contribution />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<Profile />} />
               </Routes>
             </main>
             {/* Removed redundant footer here */}

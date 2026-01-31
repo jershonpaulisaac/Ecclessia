@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
 import './JoinCommunity.css';
 
 const JoinCommunity = () => {
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -25,23 +26,27 @@ const JoinCommunity = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
-            const res = await fetch(`${API_URL}/api/join-community`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
+            const { error } = await supabase
+                .from('community_joins')
+                .insert([{
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    city: formData.city,
+                    intro: formData.intro,
+                    subscribed_newsletter: formData.subscribedNewsletter
+                }]);
 
-            const data = await res.json();
-            if (res.ok) {
-                setSubmitted(true);
-            } else {
-                alert("Error: " + data.error);
-            }
+            if (error) throw error;
+            setSubmitted(true);
         } catch (err) {
             console.error(err);
-            alert("Failed to join. Please try again.");
+            alert("Failed to join: " + err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -179,8 +184,8 @@ const JoinCommunity = () => {
                         </label>
                     </div>
 
-                    <button type="submit" className="btn btn-full" disabled={!formData.agreedGuidelines}>
-                        Join the Community
+                    <button type="submit" className="btn btn-full" disabled={!formData.agreedGuidelines || loading}>
+                        {loading ? 'Joining...' : 'Join the Community'}
                     </button>
                 </form>
             </div>

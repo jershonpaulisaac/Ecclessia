@@ -11,10 +11,12 @@ import {
     Zap,
     CreditCard
 } from 'lucide-react';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import './Contribution.css';
 
 const Contribution = () => {
+    const { user } = useAuth();
     const [selectedType, setSelectedType] = useState(null);
     const [amount, setAmount] = useState('');
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -30,28 +32,24 @@ const Contribution = () => {
         setStatus({ loading: true, success: false, error: null });
 
         try {
-            const res = await fetch(`${API_URL}/api/contributions`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            const { error } = await supabase
+                .from('contribution_records')
+                .insert([{
                     ...formData,
                     type: selectedType,
-                    amount: selectedType === 'support' ? amount : null
-                })
-            });
+                    amount: selectedType === 'support' ? amount : null,
+                    user_id: user?.id
+                }]);
 
-            if (res.ok) {
-                setStatus({ loading: false, success: true, error: null });
-                setFormData({ name: '', email: '', message: '' });
-                setAmount('');
-                setTimeout(() => setStatus(prev => ({ ...prev, success: false })), 5000);
-            } else {
-                const data = await res.json();
-                setStatus({ loading: false, success: false, error: data.error || 'Submission failed' });
-            }
+            if (error) throw error;
+
+            setStatus({ loading: false, success: true, error: null });
+            setFormData({ name: '', email: '', message: '' });
+            setAmount('');
+            setTimeout(() => setStatus(prev => ({ ...prev, success: false })), 5000);
         } catch (err) {
             console.error('Contribution submission failed:', err);
-            setStatus({ loading: false, success: false, error: 'Could not connect to server' });
+            setStatus({ loading: false, success: false, error: err.message || 'Submission failed' });
         }
     };
 

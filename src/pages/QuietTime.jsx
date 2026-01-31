@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Book, Heart, Lock, Globe, X } from 'lucide-react';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import './QuietTime.css';
 
 const QuietTime = () => {
+    const { user } = useAuth();
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
     // New Entry State
     const [newEntry, setNewEntry] = useState({ scripture: '', reflection: '', is_public: false });
 
     const fetchEntries = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/quiet-times`);
-            const data = await res.json();
-            setEntries(data);
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('quiet_times')
+                .select(`
+                    *,
+                    profiles (username)
+                `)
+                .eq('is_public', true)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setEntries(data || []);
         } catch (err) {
             console.error(err);
         } finally {
@@ -29,39 +41,51 @@ const QuietTime = () => {
     const handleSubmit = async () => {
         if (!newEntry.scripture || !newEntry.reflection) return;
 
-        try {
-            const res = await fetch(`${API_URL}/api/quiet-times`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newEntry)
-            });
-            if (res.ok) {
-                setNewEntry({ scripture: '', reflection: '', is_public: false });
-                fetchEntries();
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleDelete = async (entryId) => {
-        if (!window.confirm('Are you sure you want to delete this reflection? This action cannot be undone.')) {
+        if (!user) {
+            alert("Please sign in to share a reflection.");
             return;
         }
 
         try {
-            const res = await fetch(`${API_URL}/api/quiet-times/${entryId}`, {
-                method: 'DELETE'
-            });
+            setSubmitting(true);
+            const { error } = await supabase
+                .from('quiet_times')
+                .insert([{
+                    scripture: newEntry.scripture,
+                    reflection: newEntry.reflection,
+                    is_public: newEntry.is_public,
+                    user_id: user.id
+                }]);
 
-            if (res.ok) {
-                fetchEntries(); // Refresh list
-            } else {
-                alert('Failed to delete entry');
-            }
+            if (error) throw error;
+
+            setNewEntry({ scripture: '', reflection: '', is_public: false });
+            fetchEntries();
+            alert("Reflection shared successfully!");
+        } catch (err) {
+            console.error(err);
+            alert("Error: " + err.message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleDelete = async (entryId) => {
+        if (!window.confirm('Are you sure you want to delete this reflection?')) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('quiet_times')
+                .delete()
+                .eq('id', entryId);
+
+            if (error) throw error;
+            fetchEntries();
         } catch (error) {
             console.error("Error deleting entry:", error);
-            alert('Failed to delete entry');
+            alert('Failed to delete entry: ' + error.message);
         }
     };
 
@@ -111,7 +135,9 @@ const QuietTime = () => {
                                     <Lock size={16} />
                                 </button>
                             </div>
-                            <button className="btn" onClick={handleSubmit}>Post Entry</button>
+                            <button className="btn" onClick={handleSubmit} disabled={submitting}>
+                                {submitting ? 'Sharing...' : 'Post Entry'}
+                            </button>
                         </div>
                     </div>
                 </aside>
@@ -126,8 +152,8 @@ const QuietTime = () => {
                             <div key={entry.id} className="qt-entry">
                                 <div className="qt-meta">
                                     <div className="meta-left">
-                                        <span className="qt-date">{new Date(entry.createdAt).toLocaleDateString()}</span>
-                                        <span className="qt-user">{entry.User ? entry.User.username : 'Unknown'}</span>
+                                        <span className="qt-date">{new Date(entry.created_at).toLocaleDateString()}</span>
+                                        <span className="qt-user">{entry.profiles ? entry.profiles.username : 'Unknown'}</span>
                                     </div>
                                 </div>
                                 <div className="qt-scripture">
