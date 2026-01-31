@@ -58,7 +58,7 @@ const Navigation = () => {
 
           {loading ? (
             <div className="nav-link auth-link">
-              <span className="loading-dots">Loading</span>
+              <div className="nav-skeleton" title="Checking authentication status..."></div>
             </div>
           ) : user ? (
             <div className="auth-nav-group">
@@ -99,7 +99,7 @@ const Navigation = () => {
             ))}
 
             {loading ? (
-              <div className="mobile-link anim-pulse">Checking status...</div>
+              <div className="mobile-link nav-skeleton" style={{ width: '120px', margin: '0 auto' }}></div>
             ) : user ? (
               <>
                 <NavLink to="/profile" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
