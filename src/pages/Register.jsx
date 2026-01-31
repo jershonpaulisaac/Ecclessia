@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
 import './Register.css';
 
 const Register = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -15,7 +14,7 @@ const Register = () => {
         city: '',
         intro: '',
         agreed: false,
-        password: '' // Added password field
+        password: ''
     });
 
     const handleChange = (e) => {
@@ -33,32 +32,30 @@ const Register = () => {
             return;
         }
 
+        setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: formData.name, // Mapping name to username
-                    email: formData.email,
-                    password: formData.password,
-                    phone: formData.phone,
-                    city: formData.city,
-                    intro: formData.intro
-                })
+            const { data, error } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                    data: {
+                        username: formData.name,
+                        phone: formData.phone,
+                        city: formData.city,
+                        intro: formData.intro
+                    }
+                }
             });
 
-            const data = await res.json();
-            if (res.ok) {
-                // Auto-login the newly registered user
-                login(data.user);
-                alert("Registration Successful! Welcome to the community.");
-                navigate('/profile'); // Redirect to profile
-            } else {
-                alert("Error: " + data.error);
-            }
+            if (error) throw error;
+
+            alert("Registration Successful! Please check your email for verification (if enabled) and sign in.");
+            navigate('/login');
         } catch (err) {
             console.error(err);
-            alert("Registration Failed");
+            alert("Registration Failed: " + err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -155,8 +152,8 @@ const Register = () => {
                         </label>
                     </div>
 
-                    <button type="submit" className="btn btn-full" disabled={!formData.agreed}>
-                        Create Account
+                    <button type="submit" className="btn btn-full" disabled={!formData.agreed || loading}>
+                        {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
                 </form>
 

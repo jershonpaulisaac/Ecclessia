@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, ThumbsUp, AlertCircle, Plus, X } from 'lucide-react';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import './QA.css';
 
 const QA = () => {
+    const { user } = useAuth();
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAskForm, setShowAskForm] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     // Form State
     const [newQ, setNewQ] = useState({ title: '', context: '', verse_ref: '' });
 
-    // 1. Fetch Questions from Backend
+    // 1. Fetch Questions from Supabase
     const fetchQuestions = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/questions`);
-            const data = await res.json();
-            setQuestions(data);
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('questions')
+                .select(`
+                    *,
+                    profiles (username),
+                    answers (id)
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setQuestions(data || []);
         } catch (error) {
             console.error("Failed to fetch questions:", error);
         } finally {
@@ -33,42 +45,53 @@ const QA = () => {
         e.preventDefault();
         if (!newQ.title) return;
 
-        try {
-            const res = await fetch(`${API_URL}/api/questions`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newQ)
-            });
+        if (!user) {
+            alert("Please sign in to post a question.");
+            return;
+        }
 
-            if (res.ok) {
-                setNewQ({ title: '', context: '', verse_ref: '' });
-                setShowAskForm(false);
-                fetchQuestions(); // Refresh list
-            }
+        try {
+            setSubmitting(true);
+            const { error } = await supabase
+                .from('questions')
+                .insert([{
+                    title: newQ.title,
+                    context: newQ.context,
+                    verse_ref: newQ.verse_ref,
+                    user_id: user.id
+                }]);
+
+            if (error) throw error;
+
+            setNewQ({ title: '', context: '', verse_ref: '' });
+            setShowAskForm(false);
+            fetchQuestions(); // Refresh list
+            alert("Question posted successfully!");
         } catch (error) {
             console.error("Error posting question:", error);
+            alert("Error: " + error.message);
+        } finally {
+            setSubmitting(false);
         }
     };
 
     // 3. Delete Question
     const handleDelete = async (questionId) => {
-        if (!window.confirm('Are you sure you want to delete this question? This action cannot be undone.')) {
+        if (!window.confirm('Are you sure you want to delete this question?')) {
             return;
         }
 
         try {
-            const res = await fetch(`${API_URL}/api/questions/${questionId}`, {
-                method: 'DELETE'
-            });
+            const { error } = await supabase
+                .from('questions')
+                .delete()
+                .eq('id', questionId);
 
-            if (res.ok) {
-                fetchQuestions(); // Refresh list
-            } else {
-                alert('Failed to delete question');
-            }
+            if (error) throw error;
+            fetchQuestions();
         } catch (error) {
             console.error("Error deleting question:", error);
-            alert('Failed to delete question');
+            alert('Failed to delete question: ' + error.message);
         }
     };
 
@@ -118,7 +141,9 @@ const QA = () => {
                                 placeholder="e.g. Galatians 5:16"
                             />
                         </div>
-                        <button type="submit" className="btn">Post Question</button>
+                        <button type="submit" className="btn" disabled={submitting}>
+                            {submitting ? 'Posting...' : 'Post Question'}
+                        </button>
                     </form>
                 </div>
             )}
@@ -140,7 +165,7 @@ const QA = () => {
                         <div key={q.id} className="question-card">
                             <div className="question-header">
                                 <div className="header-left">
-                                    <span className="author-name">{q.User ? q.User.username : 'Anonymous'}</span>
+                                    <span className="author-name">{q.profiles ? q.profiles.username : 'Anonymous'}</span>
                                     {q.verse_ref && <span className="verse-tag">{q.verse_ref}</span>}
                                 </div>
                             </div>
@@ -153,7 +178,7 @@ const QA = () => {
                                     <ThumbsUp size={16} /> Amen ({q.amen_count})
                                 </button>
                                 <button className="action-btn">
-                                    <MessageSquare size={16} /> Answer ({q.Answers ? q.Answers.length : 0})
+                                    <MessageSquare size={16} /> Answer ({q.answers ? q.answers.length : 0})
                                 </button>
                             </div>
                         </div>

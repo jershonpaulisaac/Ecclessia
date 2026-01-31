@@ -1,38 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../config';
+import { supabase } from '../lib/supabase';
 import './Login.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
         try {
-            const res = await fetch(`${API_URL}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+            const { data, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password
             });
 
-            const data = await res.json();
+            if (authError) throw authError;
 
-            if (res.ok) {
-                login(data.user);
+            if (data.user) {
                 navigate('/'); // Redirect to home
-            } else {
-                setError(data.error);
             }
         } catch (err) {
             console.error(err);
-            setError('Failed to login. Please try again.');
+            setError(err.message || 'Failed to login. Please check your credentials.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -67,7 +65,9 @@ const Login = () => {
                         />
                     </div>
 
-                    <button type="submit" className="btn btn-full">Sign In</button>
+                    <button type="submit" className="btn btn-full" disabled={loading}>
+                        {loading ? 'Signing In...' : 'Sign In'}
+                    </button>
                 </form>
 
                 <p className="text-center mt-4 text-small">
