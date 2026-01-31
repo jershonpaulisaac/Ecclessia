@@ -10,33 +10,53 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // 1. Check current session on mount
         const initAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
-                setUser({ ...session.user, ...profile });
-            } else {
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+                if (sessionError) throw sessionError;
+
+                if (session?.user) {
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (profileError) {
+                        console.warn("Profile fetch error:", profileError.message);
+                        setUser(session.user); // Fallback to basic user data
+                    } else {
+                        setUser({ ...session.user, ...profile });
+                    }
+                } else {
+                    setUser(null);
+                }
+            } catch (err) {
+                console.error("Auth initialization failed:", err.message);
                 setUser(null);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         initAuth();
 
         // 2. Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            if (session?.user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
-                setUser({ ...session.user, ...profile });
-            } else {
-                setUser(null);
+            try {
+                if (session?.user) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single();
+                    setUser({ ...session.user, ...profile });
+                } else {
+                    setUser(null);
+                }
+            } catch (err) {
+                console.error("Auth state change error:", err.message);
+                setUser(session?.user || null);
             }
         });
 
