@@ -21,48 +21,65 @@ export const AuthProvider = ({ children }) => {
                 if (sessionError) throw sessionError;
 
                 if (session?.user) {
+                    // FAST PATH: Set basic user first
+                    setUser(session.user);
+                    setLoading(false);
+
+                    // BACKGROUND: Fetch full profile
                     const { data: profile, error: profileError } = await supabase
                         .from('profiles')
                         .select('*')
                         .eq('id', session.user.id)
                         .single();
 
-                    if (profileError) {
-                        console.warn("Profile fetch error:", profileError.message);
-                        setUser(session.user); // Fallback to basic user data
-                    } else {
-                        setUser({ ...session.user, ...profile });
+                    if (!profileError && profile) {
+                        setUser(prev => ({ ...prev, ...profile }));
+                    } else if (profileError) {
+                        console.warn("Background profile fetch error:", profileError.message);
                     }
                 } else {
                     setUser(null);
+                    setLoading(false);
                 }
             } catch (err) {
                 console.error("Auth initialization failed:", err.message);
                 setUser(null);
+                setLoading(false);
             } finally {
                 clearTimeout(timeout);
-                setLoading(false);
             }
         };
 
         initAuth();
 
         // 2. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            try {
-                if (session?.user) {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_OUT') {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+
+            if (session?.user) {
+                // FAST PATH
+                setUser(session.user);
+
+                // BACKGROUND PATH
+                try {
                     const { data: profile } = await supabase
                         .from('profiles')
                         .select('*')
                         .eq('id', session.user.id)
                         .single();
-                    setUser({ ...session.user, ...profile });
-                } else {
-                    setUser(null);
+
+                    if (profile) {
+                        setUser(prev => ({ ...prev, ...profile }));
+                    }
+                } catch (err) {
+                    // Ignore background fetch errors
                 }
-            } catch (err) {
-                console.error("Auth state change error:", err.message);
-                setUser(session?.user || null);
+            } else {
+                setUser(null);
             }
         });
 
