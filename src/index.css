@@ -17,7 +17,7 @@
 
   /* Spacing */
   --spacing-container: 1200px;
-  --spacing-nav-height: 70px;
+  --spacing-nav-height: 60px;
 }
 
 body.dark {
