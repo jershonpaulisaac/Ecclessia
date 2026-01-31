@@ -7,6 +7,7 @@ import Teachings from './pages/Teachings';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import ConfirmEmail from './pages/ConfirmEmail';
 import Contribution from './pages/Contribution';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/confirm-email" element={<ConfirmEmail />} />
                 <Route path="/profile" element={<Profile />} />
               </Routes>
             </main>
