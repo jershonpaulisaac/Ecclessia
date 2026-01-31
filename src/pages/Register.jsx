@@ -34,7 +34,13 @@ const Register = () => {
 
         setLoading(true);
         try {
-            const { data, error } = await supabase.auth.signUp({
+            // Create a timeout promise to prevent infinite loading
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Request timed out. Please check your internet connection.")), 15000)
+            );
+
+            // Race the signup against the timeout
+            const signUpPromise = supabase.auth.signUp({
                 email: formData.email,
                 password: formData.password,
                 options: {
@@ -46,6 +52,8 @@ const Register = () => {
                     }
                 }
             });
+
+            const { data, error } = await Promise.race([signUpPromise, timeoutPromise]);
 
             if (error) throw error;
 

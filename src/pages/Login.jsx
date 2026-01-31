@@ -16,10 +16,18 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const { data, error: authError } = await supabase.auth.signInWithPassword({
+            // Create a timeout promise
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Request timed out. Please check your internet connection.")), 15000)
+            );
+
+            // Race the login against the timeout
+            const loginPromise = supabase.auth.signInWithPassword({
                 email,
                 password
             });
+
+            const { data, error: authError } = await Promise.race([loginPromise, timeoutPromise]);
 
             if (authError) throw authError;
 
